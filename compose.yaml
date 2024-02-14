@@ -1,8 +1,0 @@
-services:
-  mastocord:
-    build: .
-    environment:
-      DISCORD_WEBHOOK: "${DISCORD_WEBHOOK}"
-      MASTODON_BASE_URL: "${MASTODON_BASE_URL}"
-      MASTODON_ACCESS_TOKEN: "${MASTODON_ACCESS_TOKEN}"
-    restart: on-failure

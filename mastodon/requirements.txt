@@ -1,0 +1,4 @@
+bs4
+Mastodon.py
+pika
+pymongo
