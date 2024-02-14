@@ -1,0 +1,34 @@
+services:
+  mongo:
+    image: mongo:7.0.5
+    volumes:
+      - type: bind
+        source: ./data/mongo
+        target: /data/db
+    environment:
+      MONGO_INITDB_DATABASE: 'mastocord'
+  rabbit:
+    image: rabbitmq:3-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_VHOST: /
+      LOG_LEVEL: WARN
+  mastodon:
+    environment:
+      MASTODON_BASE_URL: "${MASTODON_BASE_URL}"
+      MASTODON_ACCESS_TOKEN: "${MASTODON_ACCESS_TOKEN}"
+    build: ./mastodon
+    command: python -u ./app.py
+    depends_on:
+      - mongo
+      - rabbit
+  discord:
+    environment:
+      DISCORD_TOKEN: "$DISCORD_TOKEN"
+      LOG_LEVEL: INFO
+    build: ./discord
+    command: python -u ./app.py
+    depends_on:
+      - mongo
+      - rabbit
