@@ -12,7 +12,7 @@ discord_token = os.environ['DISCORD_TOKEN']
 LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO').upper()
 logging.basicConfig(level=LOG_LEVEL)
 
-channel_id = 1156297238088253521
+snooper_channel_name = os.environ['DISCORD_SNOOPER_CHANNEL_NAME']
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -78,18 +78,17 @@ async def mastodon_post_loop():
 
     logging.debug("Checking RMQ for messages")
     try:
-        print("6")
         method_frame, header_frame, body = rmq_channel.basic_get('masto_posts_to_snoop')
-        print("7")
         if method_frame:
-            print(body)
+            logging.debug(body)
             status = json.loads(body)
-            print("8")
             logging.info(f"Got a message: {body}")
+            for channel in bot.get_all_channels():
+                if channel.name == channel_name:
+                    channel_id = channel.id
+                    break
             discord_channel = bot.get_channel(channel_id)
-            print("9")
             embed = discord.Embed()
-            print("10")
             embed.description = f"<html>{status['message']}</html>"
 #            await discord_channel.send(f"{status['username']} posted the following:", embed=embed)
             await discord_channel.send(status['url'])
