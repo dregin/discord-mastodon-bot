@@ -37,16 +37,13 @@ class Listener(StreamListener):
     def on_update(self, status):
 #        message = f"{status['account']['username']}: {status['content']}: {status['url']}"
         logging.debug(status)
-        print("1")
 
         # TODO: Add persistent store.
         # TODO: Check for user in list of users in persistent store.
 		# Get a list of the mastodon users we're tracking
         try:
             tracked_masto_users = mongo_trans.find({'purpose': 'user_tracking'})
-            print("2")
             tracked_masto_users = [user['username'] for user in tracked_masto_users]
-            print("3")
         except Exception as e:
             logging.error(e)
 
@@ -66,13 +63,11 @@ class Listener(StreamListener):
         payload['message'] = status['content']
         payload['url'] = status['url']
         try:
-            print("4")
             # Send the mastodon post to RabbitMQ to be picked up and posted to Discord
 #            channel.basic_publish(exchange='', routing_key='masto_posts_to_snoop', body=f'user:{user} message:{message}')
             channel.basic_publish(exchange='', routing_key='masto_posts_to_snoop', body=f'{json.dumps(payload)}')
-            print("5")
         except Exception as e:
-            print(e)
+            logging.error(e)
         connection.close
 
 m.stream_public(Listener(), local=True)
