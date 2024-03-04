@@ -84,7 +84,7 @@ async def mastodon_post_loop():
             status = json.loads(body)
             logging.info(f"Got a message: {body}")
             for channel in bot.get_all_channels():
-                if channel.name == channel_name:
+                if channel.name == snooper_channel_name:
                     channel_id = channel.id
                     break
             discord_channel = bot.get_channel(channel_id)
